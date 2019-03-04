@@ -1,0 +1,65 @@
+Given an array A of integers, find the index of values that satisfy A + B = C + D, where A,B,C & D are integers values 
+in the array.
+
+Note:
+
+1) Return the indices `A1 B1 C1 D1`, so that 
+  A[A1] + A[B1] = A[C1] + A[D1]
+  A1 < B1, C1 < D1
+  A1 < C1, B1 != D1, B1 != C1 
+
+2) If there are more than one solutions, 
+   then return the tuple of values which are lexicographical smallest. 
+
+Assume we have two solutions
+S1 : A1 B1 C1 D1 ( these are values of indices int the array )  
+S2 : A2 B2 C2 D2
+
+S1 is lexicographically smaller than S2 iff
+  A1 < A2 OR
+  A1 = A2 AND B1 < B2 OR
+  A1 = A2 AND B1 = B2 AND C1 < C2 OR 
+  A1 = A2 AND B1 = B2 AND C1 = C2 AND D1 < D2
+Example:
+
+Input: [3, 4, 7, 1, 2, 9, 8]
+Output: [0, 2, 3, 5] (O index)
+If no solution is possible, return an empty list.
+
+// Solution
+
+vector<int> Solution::equal(vector<int> &A) {
+    int n=A.size();
+    int k=0, t=0, c=INT_MAX;
+    int sum[n*(n-1)/2];                      // stores the sum of all (i,j) pairs
+    vector<int> x;
+    if(n<4){
+        return x;
+    }
+    unordered_map<int, vector<int>> m;
+    for(int i=0;i<n-1;i++){
+        for(int j=i+1;j<n;j++){
+            sum[k]=A[i]+A[j];
+            if(m.find(sum[k])==m.end()){
+                m[sum[k]].push_back(i);      // stores the (i,j) pair with sum of(i,j) as key  
+                m[sum[k]].push_back(j);      
+            }
+            if(m[sum[k]].size()>=2){         // if the same sum arrives then we just append then new indices to the key
+                if(m[sum[k]][0]<i && m[sum[k]][1]!=i && m[sum[k]][1]!=j){ // conditions given in question
+            m[sum[k]].push_back(i);
+            m[sum[k]].push_back(j);
+                }
+            }
+            t=m[sum[k]][1];
+            if(m[sum[k]].size()>2 and m[sum[k]][0]!=m[sum[k]][2]){
+                if(t<c){
+                    c=t;
+                    x=m[sum[k]];          // keeping track of lexicographically small entry
+                }
+            }
+            k+=1;
+        }
+    }
+        return x;
+    
+}
